@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg: #191919;
+            --card-bg: #202020;
+            --empty: #2e2e2e;
+            --fill: #40c463;
+            /* Verde GitHub */
+            --text-main: #ffffff;
+            --label: #888;
+        }
+
+        body {
+            background: var(--bg);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: -apple-system, system-ui, sans-serif;
+        }
+
+        .widget-container {
+            background: var(--card-bg);
+            border: 1px solid var(--empty);
+            padding: 16px 22px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Heatmap Section */
+        .heatmap-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .heatmap-label {
+            font-size: 10px;
+            color: var(--label);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .heatmap {
+            display: grid;
+            grid-template-rows: repeat(7, 8px);
+            grid-auto-flow: column;
+            gap: 3px;
+        }
+
+        .day {
+            width: 8px;
+            height: 8px;
+            background: var(--empty);
+            border-radius: 1.5px;
+        }
+
+        .day.active {
+            background: var(--fill);
+            box-shadow: 0 0 4px rgba(64, 196, 99, 0.4);
+        }
+
+        /* Streak Section */
+.streak-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-left: 1px solid var(--empty);
+    padding-left: 20px;
+    min-width: 80px; /* Asegura espacio para la llama más grande */
+}
+
+.icon-flame {
+    position: relative;
+    color: var(--fill);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 0 10px rgba(64, 196, 99, 0.4));
+}
+
+.icon-flame svg {
+    width: 68px;  /* Antes 42px */
+    height: 68px; /* Antes 42px */
+    stroke-width: 2.0; /* Trazo un poco más fino para ganar espacio interior */
+}
+
+#streak-val {
+    position: absolute;
+    top: 70%; 
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ffffff; 
+    font-size: 16px; /* Subí un poco el tamaño del número también */
+    font-weight: 900;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    z-index: 2;
+}
+
+        .streak-label {
+            font-size: 9px;
+            color: var(--label);
+            text-transform: uppercase;
+            margin-top: 4px;
+            font-weight: 800;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="widget-container">
+        <div class="heatmap-container">
+            <span class="heatmap-label">Activity Log</span>
+            <div class="heatmap" id="grid"></div>
+        </div>
+
+    <div class="streak-section">
+        <div class="icon-flame">
+            <i data-lucide="flame"></i>
+            <div id="streak-val">0</div>
+        </div>
+        <span class="streak-label">Streak</span>
+    </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        async function updateWidget() {
+                try {
+                    // Usamos la URL de producción de tu API en Vercel
+                    const baseUrl = 'https://notion-widgets-blue.vercel.app/api/leetcode';
+
+                    const [resStreak, resHeatmap] = await Promise.all([
+                        fetch(`${baseUrl}/streak`),
+                        fetch(`${baseUrl}/heatmap`)
+                    ]);
+
+                    // Validamos que ambas respuestas sean correctas
+                    if (!resStreak.ok || !resHeatmap.ok) {
+                        throw new Error("Error en la respuesta de la API");
+                    }
+
+                    const dataStreak = await resStreak.json();
+                    const dataHeatmap = await resHeatmap.json();
+
+                    // 1. Actualizar Racha (Asegúrate de que el color sea blanco en el CSS)
+                    document.getElementById('streak-val').innerText = dataStreak.streak || 0;
+
+                    // 2. Renderizar Heatmap
+                    const grid = document.getElementById('grid');
+                    grid.innerHTML = '';
+                    const today = new Date();
+
+                    // 84 días para mantenerlo compacto
+                    for (let i = 84; i >= 0; i--) {
+                        const d = new Date();
+                        d.setDate(today.getDate() - i);
+                        const dateStr = d.toISOString().split('T')[0];
+
+                        const div = document.createElement('div');
+                        div.className = 'day';
+                        if (dataHeatmap.dates && dataHeatmap.dates.includes(dateStr)) {
+                            div.classList.add('active');
+                        }
+                        grid.appendChild(div);
+                    }
+
+                } catch (e) {
+                    console.error("Error cargando el widget:", e);
+                    document.getElementById('streak-val').innerText = "!";
+                }
+            }
+
+        updateWidget();
+        setInterval(updateWidget, 30000);
+    </script>
+</body>
+
+</html>

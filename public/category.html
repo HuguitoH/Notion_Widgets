@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        :root {
+            --bg-notion: #191919;
+            --card-bg: #202020;
+            --accent: #ffcc00;
+            /* Dorado brillante */
+            --text: #ffffff;
+            --border: #2e2e2e;
+        }
+
+        body {
+            background: var(--bg-notion);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow: hidden;
+        }
+
+        .widget-container {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    /* Sube el padding de 12px a 18px para igualar al widget morado */
+    padding: 18px 24px; 
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    min-width: 260px; /* Un pelín más ancho para dar estabilidad */
+}
+
+        .icon-box {
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        @keyframes pulse-radar {
+    0% { filter: drop-shadow(0 0 5px rgba(255, 204, 0, 0.4)); opacity: 1; }
+    50% { filter: drop-shadow(0 0 15px rgba(255, 204, 0, 0.8)); opacity: 0.8; }
+    100% { filter: drop-shadow(0 0 5px rgba(255, 204, 0, 0.4)); opacity: 1; }
+}
+
+        .icon-box svg.lucide {
+            width: 42px !important;
+            height: 42px !important;
+            stroke-width: 2.2;
+            filter: drop-shadow(0 0 12px rgba(255, 204, 0, 0.4));
+            animation: pulse-radar 2s infinite ease-in-out;
+        }
+
+        .text-content {
+            display: flex;
+            flex-direction: column;
+            white-space: nowrap;
+            /* Fuerza una sola línea */
+        }
+
+        .label {
+            font-size: 10px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 2px;
+            font-weight: 700;
+        }
+
+        .category-text {
+            color: var(--text);
+            /* Bajamos de 28px a 22px para asegurar la línea única */
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="widget-container">
+        <div class="icon-box">
+            <i data-lucide="locate-fixed"></i>
+        </div>
+
+        <div class="text-content">
+            <span class="label">Current Focus</span>
+            <div class="category-text" id="category">Arrays & Hashing</div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons({ attrs: { width: 42, height: 42 } });
+
+        async function updateCategory() {
+            try {
+                const res = await fetch('https://notion-widgets-blue.vercel.app/api/leetcode/category');
+
+                if (!res.ok) throw new Error("404 Not Found");
+
+                const data = await res.json();
+                const catElement = document.getElementById('category');
+                catElement.innerText = data.category || "Arrays & Hashing";
+
+            } catch (e) {
+                console.log("Error cargando categoría, usando fallback...");
+                // Mantener el texto por defecto si la API falla
+            }
+        }
+
+        updateCategory();
+        setInterval(updateCategory, 60000);
+    </script>
+</body>
+
+</html>
