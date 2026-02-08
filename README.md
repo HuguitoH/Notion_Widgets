@@ -45,6 +45,7 @@ npm install
 ## 💡 Motivation
 
 Built to integrate coding practice tracking directly into my Notion workspace, demonstrating API integration, database querying, and real-time data visualization.
+
 <img width="2559" height="1074" alt="image" src="https://github.com/user-attachments/assets/374ac983-808e-45a8-8e4a-2f2772d03852" />
 
 
