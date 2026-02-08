@@ -18,10 +18,10 @@ Custom embeddable widgets that integrate with Notion's API to display real-time 
 
 ## 🔗 Live Demo
 
-[https://notion-widgets-blue.vercel.app/](https://notion-widgets-blue.vercel.app/)
-[Category_widget](https://notion-widgets-blue.vercel.app/category.html)
-[Streak_widget](https://notion-widgets-blue.vercel.app/streak.html)
-[Countdown_widget](https://notion-widgets-blue.vercel.app/index.html)
+- [https://notion-widgets-blue.vercel.app/](https://notion-widgets-blue.vercel.app/)
+- [Category_widget](https://notion-widgets-blue.vercel.app/category.html)
+- [Streak_widget](https://notion-widgets-blue.vercel.app/streak.html)
+- [Countdown_widget](https://notion-widgets-blue.vercel.app/index.html)
 
 ## 🏗️ Architecture
 
